@@ -1,13 +1,15 @@
 package io.oasp.gastronomy.restaurant.offermanagement.dataaccess.api;
 
-import io.oasp.gastronomy.restaurant.general.common.api.datatype.Money;
-import io.oasp.gastronomy.restaurant.general.dataaccess.api.ApplicationPersistenceEntity;
-import io.oasp.gastronomy.restaurant.offermanagement.common.api.Offer;
-
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import io.oasp.gastronomy.restaurant.general.common.api.datatype.Money;
+import io.oasp.gastronomy.restaurant.general.dataaccess.api.ApplicationPersistenceEntity;
+import io.oasp.gastronomy.restaurant.offermanagement.common.api.Offer;
+import io.oasp.gastronomy.restaurant.offermanagement.common.api.Special;
 
 /**
  * The {@link ApplicationPersistenceEntity persistent entity} for a special.
@@ -16,7 +18,7 @@ import javax.persistence.Table;
  */
 @Entity(name = "Special")
 @Table(name = "Special")
-public class SpecialEntity {
+public class SpecialEntity extends ApplicationPersistenceEntity implements Special {
 
   private String name;
 
@@ -26,6 +28,8 @@ public class SpecialEntity {
   private WeeklyPeriodEmbeddable activePeriod;
 
   private Money specialPrice;
+
+  private static final long serialVersionUID = 1L;
 
   /**
    * Returns the name of this special.
@@ -106,6 +110,34 @@ public class SpecialEntity {
   public void setSpecialPrice(Money specialPrice) {
 
     this.specialPrice = specialPrice;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @Transient
+  public Long getOfferId() {
+
+    if (this.offer == null) {
+      return null;
+    }
+    return this.offer.getId();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void setOfferId(Long offerId) {
+
+    if (offerId == null) {
+      this.offer = null;
+    } else {
+      OfferEntity offerEntity = new OfferEntity();
+      offerEntity.setId(offerId);
+      this.offer = offerEntity;
+    }
   }
 
 }
